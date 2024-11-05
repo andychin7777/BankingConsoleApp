@@ -1,0 +1,14 @@
+c:\Users\Su PeiZi\Desktop\BankingConsoleApp\BankingConsoleApp\BankingConsoleApp\bin\Debug\net8.0\BankingConsoleApp.exe
+c:\Users\Su PeiZi\Desktop\BankingConsoleApp\BankingConsoleApp\BankingConsoleApp\bin\Debug\net8.0\BankingConsoleApp.deps.json
+c:\Users\Su PeiZi\Desktop\BankingConsoleApp\BankingConsoleApp\BankingConsoleApp\bin\Debug\net8.0\BankingConsoleApp.runtimeconfig.json
+c:\Users\Su PeiZi\Desktop\BankingConsoleApp\BankingConsoleApp\BankingConsoleApp\bin\Debug\net8.0\BankingConsoleApp.dll
+c:\Users\Su PeiZi\Desktop\BankingConsoleApp\BankingConsoleApp\BankingConsoleApp\bin\Debug\net8.0\BankingConsoleApp.pdb
+c:\Users\Su PeiZi\Desktop\BankingConsoleApp\BankingConsoleApp\BankingConsoleApp\obj\Debug\net8.0\BankingConsoleApp.GeneratedMSBuildEditorConfig.editorconfig
+c:\Users\Su PeiZi\Desktop\BankingConsoleApp\BankingConsoleApp\BankingConsoleApp\obj\Debug\net8.0\BankingConsoleApp.AssemblyInfoInputs.cache
+c:\Users\Su PeiZi\Desktop\BankingConsoleApp\BankingConsoleApp\BankingConsoleApp\obj\Debug\net8.0\BankingConsoleApp.AssemblyInfo.cs
+c:\Users\Su PeiZi\Desktop\BankingConsoleApp\BankingConsoleApp\BankingConsoleApp\obj\Debug\net8.0\BankingConsoleApp.csproj.CoreCompileInputs.cache
+c:\Users\Su PeiZi\Desktop\BankingConsoleApp\BankingConsoleApp\BankingConsoleApp\obj\Debug\net8.0\BankingConsoleApp.dll
+c:\Users\Su PeiZi\Desktop\BankingConsoleApp\BankingConsoleApp\BankingConsoleApp\obj\Debug\net8.0\refint\BankingConsoleApp.dll
+c:\Users\Su PeiZi\Desktop\BankingConsoleApp\BankingConsoleApp\BankingConsoleApp\obj\Debug\net8.0\BankingConsoleApp.pdb
+c:\Users\Su PeiZi\Desktop\BankingConsoleApp\BankingConsoleApp\BankingConsoleApp\obj\Debug\net8.0\BankingConsoleApp.genruntimeconfig.cache
+c:\Users\Su PeiZi\Desktop\BankingConsoleApp\BankingConsoleApp\BankingConsoleApp\obj\Debug\net8.0\ref\BankingConsoleApp.dll
