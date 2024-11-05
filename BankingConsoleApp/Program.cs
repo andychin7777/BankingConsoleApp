@@ -1,9 +1,21 @@
-﻿using Shared;
+﻿using BankingConsoleApp;
+using BankingConsoleApp.Interface;
+using BankingConsoleApp.Mapping;
+using BankingService.Bll.Interface;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Shared;
 
 internal class Program
 {
+    private static ServiceProvider _serviceProvider;
+
     private static void Main(string[] args)
     {
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
+        Ioc.Init(builder.Services);
+        _serviceProvider = builder.Services.BuildServiceProvider();
+
         bool displayedWelcome = false;
 
         while (true)
@@ -18,15 +30,15 @@ internal class Program
             var result = HandleLineActionInput(line);
 
             //display messages to user
-            if (result.Messages != null && result.Messages.Any())
+            if (result.notification.Messages != null && result.notification.Messages.Any())
             {
-                foreach (var message in result.Messages)
+                foreach (var message in result.notification.Messages)
                 {
                     Console.WriteLine(message);
                 }
             }
             //break the loop here.
-            if (!result.Value)
+            if (result.isExit)
             {
                 break;
             }
@@ -45,15 +57,15 @@ internal class Program
     /// </summary>
     /// <param name="line"></param>
     /// <returns></returns>
-    private static Notification<bool> HandleLineActionInput(string? line)
+    private static (Notification notification, bool isExit) HandleLineActionInput(string? line)
     {
         if (String.IsNullOrEmpty(line))
         {
-            return new Notification<bool>
+            return (new Notification
             {
                 Messages = new List<string>() { "Invalid input please try again." },
-                Value = true
-            };
+                Success = true
+            }, false);
         }
 
         var bankAction = BankActionTypeMapper.MapToBankActionType(line);
@@ -63,26 +75,26 @@ internal class Program
             case BankActionType.InterestRules:
             case BankActionType.PrintStatement:
                 {
-                    return HandleActionInputValue(bankAction.Value);
+                    return (HandleActionInputValue(bankAction.Value), false);
                 }
             case BankActionType.Quit:
                 {
-                    return new Notification<bool>
+                    return (new Notification
                     {
-                        Value = false
-                    };
+                        Success = true
+                    }, true);
                 }
             default:
                 {
-                    return new Notification<bool>
+                    return (new Notification
                     {
-                        Value = true
-                    };
+                        Success = true
+                    }, false);
                 }
         }
     }
 
-    private static Notification<bool> HandleActionInputValue(BankActionType bankActionType)
+    private static Notification HandleActionInputValue(BankActionType bankActionType)
     {
         if (bankActionType == BankActionType.Transaction)
         {
@@ -101,11 +113,16 @@ internal class Program
         var newLineRead = Console.ReadLine();
         if (!string.IsNullOrEmpty(newLineRead))
         {
+            if(bankActionType == BankActionType.Transaction)
+            {
+                return _serviceProvider.GetRequiredService<IBankActionService>().PerformTransaction(newLineRead);
+            }
+
             //TODO process action here.
         }
-        return new Notification<bool>
+        return new Notification
         {
-            Value = true
+            Success = true
         };
     }
 
