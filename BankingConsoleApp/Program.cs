@@ -56,9 +56,15 @@ internal class Program
             };
         }
 
-        var bankingAction = BankActionTypeMapper.MapToBankActionType(line);
-        switch (bankingAction)
+        var bankAction = BankActionTypeMapper.MapToBankActionType(line);
+        switch (bankAction)
         {
+            case BankActionType.Transaction:
+            case BankActionType.InterestRules:
+            case BankActionType.PrintStatement:
+                {
+                    return HandleActionInputValue(bankAction.Value);
+                }
             case BankActionType.Quit:
                 {
                     return new Notification<bool>
@@ -76,9 +82,31 @@ internal class Program
         }
     }
 
-    private static void HandleActionInputValue()
+    private static Notification<bool> HandleActionInputValue(BankActionType bankActionType)
     {
+        if (bankActionType == BankActionType.Transaction)
+        {
+            Console.WriteLine("Please enter transaction details in <Date> <Account> <Type> <Amount> format");
+        }
+        else if (bankActionType == BankActionType.InterestRules)
+        {
+            Console.WriteLine("Please enter interest rules details in <Date> <RuleId> <Rate in %> format ");
+        }
+        else if (bankActionType == BankActionType.PrintStatement)
+        {
+            Console.WriteLine("Please enter account and month to generate the statement <Account> <Year><Month>");
+        }
+        Console.WriteLine("or enter blank to go back to main menu):");
 
+        var newLineRead = Console.ReadLine();
+        if (!string.IsNullOrEmpty(newLineRead))
+        {
+            //TODO process action here.
+        }
+        return new Notification<bool>
+        {
+            Value = true
+        };
     }
 
     private static void DisplayMessage(bool displayedWelcome)
