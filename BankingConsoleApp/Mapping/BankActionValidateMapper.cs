@@ -6,6 +6,8 @@ namespace BankingConsoleApp.Mapping;
 
 public static class BankActionValidateMapper
 {
+    private const string ValidationPrefixMessage = "Transaction Validation Message :";
+
     public static Notification<Account?> MapStringToAccountAndTransaction(string inputString)
     {
         if (String.IsNullOrEmpty(inputString))
@@ -13,7 +15,7 @@ public static class BankActionValidateMapper
             return new Notification<Account?>
             {
                 Success = false,
-                Messages = new List<string> { "Blank input" }
+                Messages = new List<string> { $"{ValidationPrefixMessage} Blank input" }
             };
         }
 
@@ -24,7 +26,7 @@ public static class BankActionValidateMapper
             return new Notification<Account?>
             {
                 Success = false,
-                Messages = new List<string> { "Input string is invalid" }
+                Messages = new List<string> { $"{ValidationPrefixMessage} Input string is invalid" }
             };
         }
 
@@ -37,7 +39,7 @@ public static class BankActionValidateMapper
         if (!DateOnly.TryParseExact("yyyyMMdd", split[0], out var outDateOnly))
         {
             returnNotification.Success = false;
-            returnNotification.Messages.Add("Date Input is an invalid Date");
+            returnNotification.Messages.Add($"{ValidationPrefixMessage} Date Input is an invalid Date");
         }
 
         //write account name into the account
@@ -48,7 +50,7 @@ public static class BankActionValidateMapper
         if (mappingType == null)
         {
             returnNotification.Success = false;
-            returnNotification.Messages.Add("Invalid Type");
+            returnNotification.Messages.Add($"{ValidationPrefixMessage} Invalid Type");
         }
 
         //only allow x.00 or x.0 or x        
@@ -58,7 +60,7 @@ public static class BankActionValidateMapper
             || !decimalTryParse)
         {
             returnNotification.Success = false;
-            returnNotification.Messages.Add("Invalid Amount");
+            returnNotification.Messages.Add($"{ValidationPrefixMessage} Invalid Amount");
         }
 
         //map transaction only if there are no errors

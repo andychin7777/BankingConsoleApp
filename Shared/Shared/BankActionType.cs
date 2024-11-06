@@ -10,7 +10,7 @@ public enum BankActionType
 
 public static class BankActionTypeMapper
 {
-    public static BankActionType? MapToBankActionType(string mappingString)
+    public static BankActionType? MapToBankActionType(this string mappingString)
     {
         var toLowerString = mappingString.ToLowerInvariant();
 
@@ -27,6 +27,21 @@ public static class BankActionTypeMapper
             default:
                 return null;
         }
-
+    }
+    public static string ToString(this BankActionType bankActionType)
+    {
+        switch (bankActionType)
+        {
+            case BankActionType.Transaction:
+                return "T";
+            case BankActionType.InterestRules:
+                return "I";
+            case BankActionType.PrintStatement:
+                return "P";
+            case BankActionType.Quit:
+                return "Q";            
+            default:
+                return null;
+        }
     }
 }
