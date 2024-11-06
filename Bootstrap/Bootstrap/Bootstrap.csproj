@@ -11,7 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Shared\Shared\Shared.csproj" />
+    <ProjectReference Include="..\..\BLL\BankingService.Bll\BankingService.Bll.csproj" />
+    <ProjectReference Include="..\..\DAL\BankingService.Dal\BankingService.Dal.csproj" />
+    <ProjectReference Include="..\..\DAL\BankingService.Sql\BankingService.Sql.csproj" />
   </ItemGroup>
 
 </Project>

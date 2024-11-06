@@ -6,11 +6,9 @@ namespace BankingConsoleApp;
 
 public static class Ioc
 {
-    public static void Init(IServiceCollection serviceCollection)
+    public static IServiceCollection AddProgram(this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddScoped<IBankActionService, BankActionService>();
-
-        //load bll services
-        BankingService.Bll.Ioc.Init(serviceCollection);
+        serviceCollection.AddScoped<IBankActionService, BankActionService>();        
+        return serviceCollection;
     }
 }

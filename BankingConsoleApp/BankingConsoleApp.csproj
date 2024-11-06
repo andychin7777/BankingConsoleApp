@@ -4,11 +4,15 @@
     <None Update="BankingConsoleAppDb.db">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Shared\Shared\Shared.csproj" />
     <ProjectReference Include="..\BLL\BankingService.Bll\BankingService.Bll.csproj" />
+    <ProjectReference Include="..\Bootstrap\Bootstrap\Bootstrap.csproj" />
   </ItemGroup>
 
   <ItemGroup>

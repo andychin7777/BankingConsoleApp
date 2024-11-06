@@ -1,20 +1,28 @@
 ﻿using BankingConsoleApp;
 using BankingConsoleApp.Interface;
-using BankingConsoleApp.Mapping;
-using BankingService.Bll.Interface;
+using Bootstrap;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shared;
 
 internal class Program
 {
-    private static ServiceProvider _serviceProvider;
+    private static IServiceProvider _serviceProvider;
 
     private static void Main(string[] args)
     {
-        HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
-        Ioc.Init(builder.Services);
-        _serviceProvider = builder.Services.BuildServiceProvider();
+        var iHostBuilder = Host.CreateDefaultBuilder();
+        Startup.Init(iHostBuilder);
+        iHostBuilder.ConfigureServices((hostingContext, services) =>
+                    {
+                        services.AddProgram();
+                    });
+
+        using var host = iHostBuilder.Build();
+
+        //begin scope
+        using var serviceScope = host.Services.CreateScope();
+        _serviceProvider = serviceScope.ServiceProvider;
 
         bool displayedWelcome = false;
 
