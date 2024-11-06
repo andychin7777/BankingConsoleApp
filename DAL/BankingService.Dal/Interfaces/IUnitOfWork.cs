@@ -2,6 +2,7 @@
 {
     public interface IUnitOfWork : IGenericUnitOfWork
     {
-        ISettingRepository SettingRepository { get; }
+        IAccountRepository AccountRepository { get; }
+        IAccountTransactionRepository AccountTransactionRepository { get; }
     }
 }

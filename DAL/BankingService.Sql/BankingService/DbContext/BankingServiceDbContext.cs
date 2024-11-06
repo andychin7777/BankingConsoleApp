@@ -1,4 +1,4 @@
-﻿using BankingService.Sql.OrgChart.Model;
+﻿using BankingService.Sql.BankingService.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace BankingService.Sql.DbContext
@@ -14,7 +14,7 @@ namespace BankingService.Sql.DbContext
         {
         }
 
-        public virtual DbSet<Setting> Settings { get; set; }
+        public virtual DbSet<Account> Accounts { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

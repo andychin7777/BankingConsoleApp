@@ -7,13 +7,17 @@ namespace BankingService.Dal.Services
     {
         private readonly BankingServiceDbContext _dbContext;
 
-        public ISettingRepository SettingRepository { get; }
+        public IAccountRepository AccountRepository { get; }
+
+        public IAccountTransactionRepository AccountTransactionRepository { get; }
 
         public UnitOfWork(BankingServiceDbContext dbContext,
-            ISettingRepository settingRepository)
+            IAccountRepository accountRepository,
+            IAccountTransactionRepository accountTransactionRepository)
         {
             _dbContext = dbContext;            
-            SettingRepository = settingRepository;
+            AccountRepository = accountRepository;
+            AccountTransactionRepository = accountTransactionRepository;
         }
 
         public async Task RunInTransaction(Func<Task> completeAction)

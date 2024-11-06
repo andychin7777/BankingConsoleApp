@@ -9,7 +9,7 @@ internal class Program
 {
     private static IServiceProvider _serviceProvider;
 
-    private static void Main(string[] args)
+    private static async Task Main(string[] args)
     {
         var iHostBuilder = Host.CreateDefaultBuilder();
         Startup.Init(iHostBuilder);
@@ -35,7 +35,7 @@ internal class Program
                 displayedWelcome = true;
             }
             var line = Console.ReadLine();
-            var result = HandleLineActionInput(line);
+            var result = await HandleLineActionInput(line);
 
             //display messages to user
             if (result.notification.Messages != null && result.notification.Messages.Any())
@@ -65,7 +65,7 @@ internal class Program
     /// </summary>
     /// <param name="line"></param>
     /// <returns></returns>
-    private static (Notification notification, bool isExit) HandleLineActionInput(string? line)
+    private static async Task<(Notification notification, bool isExit)> HandleLineActionInput(string? line)
     {
         if (String.IsNullOrEmpty(line))
         {
@@ -83,7 +83,7 @@ internal class Program
             case BankActionType.InterestRules:
             case BankActionType.PrintStatement:
                 {
-                    return (HandleActionInputValue(bankAction.Value), false);
+                    return (await HandleActionInputValue(bankAction.Value), false);
                 }
             case BankActionType.Quit:
                 {
@@ -102,7 +102,7 @@ internal class Program
         }
     }
 
-    private static Notification HandleActionInputValue(BankActionType bankActionType)
+    private static async Task<Notification> HandleActionInputValue(BankActionType bankActionType)
     {
         if (bankActionType == BankActionType.Transaction)
         {
@@ -123,7 +123,7 @@ internal class Program
         {
             if(bankActionType == BankActionType.Transaction)
             {
-                return _serviceProvider.GetRequiredService<IBankActionService>().PerformTransaction(newLineRead);
+                return await _serviceProvider.GetRequiredService<IBankActionService>().PerformTransaction(newLineRead);
             }
 
             //TODO process action here.

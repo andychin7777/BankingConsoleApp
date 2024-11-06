@@ -8,7 +8,8 @@ namespace BankingService.Dal.Ioc
     {
         public static IServiceCollection AddDal(this IServiceCollection services)
         {
-            services.AddScoped<ISettingRepository, SettingRepository>();
+            services.AddScoped<IAccountRepository, AccountRepository>();
+            services.AddScoped<IAccountTransactionRepository, AccountTransactionRepository>();
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             return services;

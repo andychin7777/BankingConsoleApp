@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Shared\Shared\Shared.csproj" />
+    <ProjectReference Include="..\..\DAL\BankingService.Dal\BankingService.Dal.csproj" />
   </ItemGroup>
 
 </Project>

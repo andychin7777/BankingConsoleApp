@@ -16,7 +16,7 @@ public class BankActionService : IBankActionService
         _bankingService = bankingService;
     }
 
-    public Notification<Account?> PerformTransaction(string inputString)
+    public async Task<Notification<Account?>> PerformTransaction(string inputString)
     {
         var bankActionHelperResponse = BankActionValidateMapper.MapStringToAccountAndTransaction(inputString);
         if (!bankActionHelperResponse.Success)
@@ -26,7 +26,7 @@ public class BankActionService : IBankActionService
 
         try
         {
-            var response = _bankingService.ProcessTransaction(bankActionHelperResponse.Value);
+            var response = await _bankingService.ProcessTransaction(bankActionHelperResponse.Value);
 
             if (response.Success)
             {

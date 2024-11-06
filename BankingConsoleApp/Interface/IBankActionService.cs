@@ -5,5 +5,5 @@ namespace BankingConsoleApp.Interface;
 
 public interface IBankActionService
 {
-    public Notification<Account?> PerformTransaction(string inputString);
+    public Task<Notification<Account?>> PerformTransaction(string inputString);
 }
