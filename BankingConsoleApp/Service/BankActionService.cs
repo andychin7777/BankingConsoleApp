@@ -5,6 +5,7 @@ using BankingService.Bll.Model;
 using BetterConsoleTables;
 using Shared;
 using Shared.Mapping;
+using System.Data;
 
 namespace BankingConsoleApp.Service;
 
@@ -15,9 +16,9 @@ public class BankActionService : IBankActionService
     public BankActionService(IBankingService bankingService)
     {
         _bankingService = bankingService;
-    }
+    }    
 
-    public async Task<Notification<Account?>> PerformTransaction(string inputString)
+    public async Task<Notification> PerformTransaction(string inputString)
     {
         var bankActionHelperResponse = BankActionValidateMapper.MapStringToAccountAndTransaction(inputString);
         if (!bankActionHelperResponse.Success)
@@ -57,13 +58,55 @@ public class BankActionService : IBankActionService
                         );
                     }
                 }
+                Console.WriteLine($"Account {response.Value.AccountName}:");
                 Console.Write(table.ToString());
             }
             return response;
         }
         catch (Exception ex)
         {
-            return new Notification<Account?>
+            return new Notification
+            {
+                Success = false,
+                Messages = new List<string> { ex.Message }
+            };
+        }
+    }
+
+    public async Task<Notification> PerformDefineInterestRules(string inputString)
+    {
+        var bankActionHelperResponse = BankActionValidateMapper.MapStringToInterestRuleAndTransaction(inputString);
+        if (!bankActionHelperResponse.Success)
+        {
+            return
+                new Notification
+                {
+                    Success = bankActionHelperResponse.Success,
+                    Messages = bankActionHelperResponse.Messages
+                };
+        }
+
+        try
+        {
+            var response = await _bankingService.ProcessDefineInterestRule(bankActionHelperResponse.Value);
+            if (response.Success)
+            {
+                //| Date | RuleId | Rate(%) |
+                Table table = new Table("Date", "RuleId", "Rate (%)");
+                foreach (var interestRule in response.Value)
+                {
+                    table.AddRow($"{interestRule.InterestRuleDateActive:yyyyMMdd}", interestRule.InterestRuleName, interestRule.InterestRate);
+                }
+
+                Console.WriteLine($"Interest Rules:");
+                Console.Write(table.ToString());
+            }
+
+            return response;
+        }
+        catch (Exception ex)
+        {
+            return new Notification
             {
                 Success = false,
                 Messages = new List<string> { ex.Message }

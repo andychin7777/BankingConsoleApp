@@ -14,4 +14,3 @@ public class Account
         return total ?? 0;
     }
 }
-

@@ -4,5 +4,6 @@
     {
         IAccountRepository AccountRepository { get; }
         IAccountTransactionRepository AccountTransactionRepository { get; }
+        IInterestRuleRepository InterestRuleRepository { get; }
     }
 }

@@ -11,13 +11,17 @@ namespace BankingService.Dal.Services
 
         public IAccountTransactionRepository AccountTransactionRepository { get; }
 
+        public IInterestRuleRepository InterestRuleRepository { get; }
+
         public UnitOfWork(BankingServiceDbContext dbContext,
             IAccountRepository accountRepository,
-            IAccountTransactionRepository accountTransactionRepository)
+            IAccountTransactionRepository accountTransactionRepository,
+            IInterestRuleRepository interestRuleRepository)
         {
             _dbContext = dbContext;            
             AccountRepository = accountRepository;
             AccountTransactionRepository = accountTransactionRepository;
+            InterestRuleRepository = interestRuleRepository;
         }
 
         public async Task RunInTransaction(Func<Task> completeAction)

@@ -15,6 +15,9 @@ namespace BankingService.Sql.DbContext
         }
 
         public virtual DbSet<Account> Accounts { get; set; }
+        public virtual DbSet<AccountTransaction> AccountTransactions { get; set; }
+
+        public virtual DbSet<InterestRule> InterestRules { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

@@ -10,6 +10,7 @@ namespace BankingService.Dal.Ioc
         {
             services.AddScoped<IAccountRepository, AccountRepository>();
             services.AddScoped<IAccountTransactionRepository, AccountTransactionRepository>();
+            services.AddScoped<IInterestRuleRepository, InterestRuleRepository>();
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             return services;

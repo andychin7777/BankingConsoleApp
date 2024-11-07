@@ -91,4 +91,34 @@ public class BankingService : IBankingService
 
         return total >= 0;
     }
+
+    public async Task<Notification<List<InterestRule>>> ProcessDefineInterestRule(InterestRule interestRule)
+    {
+        var returnNotification = new Notification<List<InterestRule>>()
+        {
+            Success = true
+        };
+
+        await _unitOfWork.RunInTransaction(async () =>
+        {
+            var mappedIntoSqlInterestRule = interestRule.MapToSqlInterestRule();
+            //find existing record match on date 
+            var existingRecord = (await _unitOfWork.InterestRuleRepository.Find(x => x.InterestRuleDateActive == mappedIntoSqlInterestRule.InterestRuleDateActive))
+                .FirstOrDefault();
+            if (existingRecord != null)
+            {
+                //delete record
+                await _unitOfWork.InterestRuleRepository.Delete(existingRecord.InterestRuleId);
+                
+            }
+            await _unitOfWork.InterestRuleRepository.Add(interestRule.MapToSqlInterestRule());
+
+            await _unitOfWork.SaveChanges();
+            //get all records
+            returnNotification.Value = (await _unitOfWork.InterestRuleRepository.All()).Select(x => x.MapToBllInterestRule())
+                .ToList();
+        });
+
+        return returnNotification;
+    }
 }

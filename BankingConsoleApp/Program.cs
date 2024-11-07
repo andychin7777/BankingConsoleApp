@@ -8,8 +8,7 @@ using Shared.Mapping;
 
 internal class Program
 {
-    private static IServiceProvider _serviceProvider;
-
+    private static IBankActionService _iBankActionService;
     private static async Task Main(string[] args)
     {
         var iHostBuilder = Host.CreateDefaultBuilder();
@@ -23,7 +22,9 @@ internal class Program
 
         //begin scope
         using var serviceScope = host.Services.CreateScope();
-        _serviceProvider = serviceScope.ServiceProvider;
+        var _serviceProvider = serviceScope.ServiceProvider;
+
+        _iBankActionService = _serviceProvider.GetRequiredService<IBankActionService>();
 
         bool displayedWelcome = false;
 
@@ -38,14 +39,7 @@ internal class Program
             var line = Console.ReadLine();
             var result = await HandleLineActionInput(line);
 
-            //display messages to user
-            if (result.notification.Messages != null && result.notification.Messages.Any())
-            {
-                foreach (var message in result.notification.Messages)
-                {
-                    Console.WriteLine(message);
-                }
-            }
+            DisplayMessagesOnConsole(result.notification);
             //break the loop here.
             if (result.isExit)
             {
@@ -59,6 +53,18 @@ internal class Program
 
         //keep console open
         Console.ReadLine();
+    }
+
+    private static void DisplayMessagesOnConsole(Notification notification)
+    {
+        //display messages to user
+        if (notification.Messages != null && notification.Messages.Any())
+        {
+            foreach (var message in notification.Messages)
+            {
+                Console.WriteLine(message);
+            }
+        }
     }
 
     /// <summary>
@@ -105,33 +111,59 @@ internal class Program
 
     private static async Task<Notification> HandleActionInputValue(BankingActionType bankActionType)
     {
-        if (bankActionType == BankingActionType.Transaction)
+        while(true)
         {
-            Console.WriteLine("Please enter transaction details in <Date> <Account> <Type> <Amount> format");
-        }
-        else if (bankActionType == BankingActionType.InterestRules)
-        {
-            Console.WriteLine("Please enter interest rules details in <Date> <RuleId> <Rate in %> format ");
-        }
-        else if (bankActionType == BankingActionType.PrintStatement)
-        {
-            Console.WriteLine("Please enter account and month to generate the statement <Account> <Year><Month>");
-        }
-        Console.WriteLine("or enter blank to go back to main menu):");
-
-        var newLineRead = Console.ReadLine();
-        if (!string.IsNullOrEmpty(newLineRead))
-        {
-            if(bankActionType == BankingActionType.Transaction)
+            if (bankActionType == BankingActionType.Transaction)
             {
-                return await _serviceProvider.GetRequiredService<IBankActionService>().PerformTransaction(newLineRead);
+                Console.WriteLine("Please enter transaction details in <Date> <Account> <Type> <Amount> format");
             }
+            else if (bankActionType == BankingActionType.InterestRules)
+            {
+                Console.WriteLine("Please enter interest rules details in <Date> <RuleId> <Rate in %> format ");
+            }
+            else if (bankActionType == BankingActionType.PrintStatement)
+            {
+                Console.WriteLine("Please enter account and month to generate the statement <Account> <Year><Month>");
+            }
+            Console.WriteLine("or enter blank to go back to main menu):");
 
-            //TODO process action here.
-        }
+            var newLineRead = Console.ReadLine();
+            if (!string.IsNullOrEmpty(newLineRead))
+            {
+                var result = await ProcessInSubMenuLineRead(newLineRead, bankActionType);
+                if (!result.Success)
+                {
+                    DisplayMessagesOnConsole(result);
+                }
+            }
+            //only break this loop if the user enters 0 to exit
+            else
+            {
+                break;
+            }
+        }        
+
         return new Notification
         {
             Success = true
+        };
+    }
+
+    private static async Task<Notification> ProcessInSubMenuLineRead(string newLineRead, BankingActionType bankActionType)
+    {
+        if (bankActionType == BankingActionType.Transaction)
+        {
+            return await _iBankActionService.PerformTransaction(newLineRead);
+        }
+
+        if (bankActionType == BankingActionType.InterestRules)
+        {
+            return await _iBankActionService.PerformDefineInterestRules(newLineRead);
+        }
+        return new Notification
+        {
+            Messages = new List<string> { "Invalid Action" },
+            Success = false
         };
     }
 

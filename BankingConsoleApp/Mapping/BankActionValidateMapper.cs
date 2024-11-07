@@ -1,3 +1,4 @@
+using System.Data;
 using System.Text.RegularExpressions;
 using BankingService.Bll.Model;
 using Shared;
@@ -7,7 +8,8 @@ namespace BankingConsoleApp.Mapping;
 
 public static class BankActionValidateMapper
 {
-    private const string ValidationPrefixMessage = "Transaction Validation Message :";
+    private const string TransactionValidationPrefixMessage = "Transaction Validation Message :";
+    private const string DefineInterestRulePrefixMessage = "Interest Rule Validation Message :";
 
     public static Notification<Account?> MapStringToAccountAndTransaction(string inputString)
     {
@@ -16,7 +18,7 @@ public static class BankActionValidateMapper
             return new Notification<Account?>
             {
                 Success = false,
-                Messages = new List<string> { $"{ValidationPrefixMessage} Blank input" }
+                Messages = new List<string> { $"{TransactionValidationPrefixMessage} Blank input" }
             };
         }
 
@@ -27,7 +29,7 @@ public static class BankActionValidateMapper
             return new Notification<Account?>
             {
                 Success = false,
-                Messages = new List<string> { $"{ValidationPrefixMessage} Input string is invalid" }
+                Messages = new List<string> { $"{TransactionValidationPrefixMessage} Input string is invalid" }
             };
         }
 
@@ -43,7 +45,7 @@ public static class BankActionValidateMapper
         if (!DateOnly.TryParseExact(split[0], "yyyyMMdd", out var outDateOnly))
         {
             returnNotification.Success = false;
-            returnNotification.Messages.Add($"{ValidationPrefixMessage} Date Input is an invalid Date");
+            returnNotification.Messages.Add($"{TransactionValidationPrefixMessage} Date Input is an invalid Date");
         }
 
         //write account name into the account
@@ -54,7 +56,7 @@ public static class BankActionValidateMapper
         if (mappingType == null)
         {
             returnNotification.Success = false;
-            returnNotification.Messages.Add($"{ValidationPrefixMessage} Invalid Type");
+            returnNotification.Messages.Add($"{TransactionValidationPrefixMessage} Invalid Type");
         }
 
         //only allow x.00 or x.0 or x        
@@ -64,7 +66,7 @@ public static class BankActionValidateMapper
             || !decimalTryParse)
         {
             returnNotification.Success = false;
-            returnNotification.Messages.Add($"{ValidationPrefixMessage} Invalid Amount");
+            returnNotification.Messages.Add($"{TransactionValidationPrefixMessage} Invalid Amount");
         }
 
         //map transaction only if there are no errors
@@ -77,6 +79,73 @@ public static class BankActionValidateMapper
                 Date = outDateOnly,
                 Amount = outAmountValue
             });
+        }
+
+        return returnNotification;
+    }
+
+    public static Notification<InterestRule?> MapStringToInterestRuleAndTransaction(string inputString)
+    {
+        if (String.IsNullOrEmpty(inputString))
+        {
+            return new Notification<InterestRule?>
+            {
+                Success = false,
+                Messages = new List<string> { $"{DefineInterestRulePrefixMessage} Blank input" }
+            };
+        }
+
+        //<Date> <RuleId> <Rate in %>
+        var split = inputString.Split(" ");
+        if (split.Length != 3)
+        {
+            return new Notification<InterestRule?>
+            {
+                Success = false,
+                Messages = new List<string> { $"{DefineInterestRulePrefixMessage} Input string is invalid" },
+                Value = new InterestRule()
+            };
+        }
+
+        var returnNotification = new Notification<InterestRule?>()
+        {
+            Success = true
+        };
+
+        //validate date is valid
+        if (!DateOnly.TryParseExact(split[0], "yyyyMMdd", out var outDateOnly))
+        {
+            returnNotification.Success = false;
+            returnNotification.Messages.Add($"{DefineInterestRulePrefixMessage} Date Input is an invalid Date");
+        }
+
+        var interestRuleName = split[1];
+
+        var numberPartString = split[2];
+        var decimalTryParse = Decimal.TryParse(numberPartString, out var rate);        
+        if (!Regex.IsMatch(numberPartString, @"^[0-9]*(\.[0-9]*)?$")
+            || !decimalTryParse)
+        {
+            returnNotification.Success = false;
+            returnNotification.Messages.Add($"{DefineInterestRulePrefixMessage} Invalid Rate");
+        }
+
+        if (!(rate > 0 && rate < 100))
+        {
+            returnNotification.Success = false;
+            returnNotification.Messages.Add($"{DefineInterestRulePrefixMessage} Rate must be between 0 and 100");
+        }
+
+        //map transaction only if there are no errors
+        if (returnNotification.Success)
+        {
+            //continue to map the account transaction object in.
+            returnNotification.Value = new InterestRule()
+            {
+                InterestRuleDateActive = outDateOnly,
+                InterestRate = rate,
+                InterestRuleName = interestRuleName
+            };
         }
 
         return returnNotification;
