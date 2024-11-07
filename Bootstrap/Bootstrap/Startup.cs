@@ -3,6 +3,7 @@ using BankingService.Dal.Ioc;
 using BankingService.Sql.Ioc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Bootstrap;
 
@@ -16,6 +17,10 @@ public static class Startup
         .Build();
 
         hostBuilder
+            .ConfigureLogging((builder, logging) =>
+            {
+                logging.ClearProviders();
+            })
             .ConfigureAppConfiguration((hostingContext, config) => { config.AddConfiguration(builtConfig); })
             .ConfigureServices((hostingContext, services) =>
                     {

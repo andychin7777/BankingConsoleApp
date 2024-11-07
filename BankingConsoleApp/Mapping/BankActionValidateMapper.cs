@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using BankingService.Bll.Model;
 using Shared;
+using Shared.Mapping;
 
 namespace BankingConsoleApp.Mapping;
 
@@ -34,9 +35,12 @@ public static class BankActionValidateMapper
         {
             Success = true,
             Value = new Account()
+            {
+                AccountTransactions = new List<AccountTransaction>()
+            }
         };
         //validate date is valid
-        if (!DateOnly.TryParseExact("yyyyMMdd", split[0], out var outDateOnly))
+        if (!DateOnly.TryParseExact(split[0], "yyyyMMdd", out var outDateOnly))
         {
             returnNotification.Success = false;
             returnNotification.Messages.Add($"{ValidationPrefixMessage} Date Input is an invalid Date");
@@ -46,7 +50,7 @@ public static class BankActionValidateMapper
         returnNotification.Value.AccountName = split[1];
 
         //try get the bank action type
-        var mappingType = BankActionTypeMapper.MapToBankActionType(split[2]);
+        var mappingType = EnumnMapping.MapToAccountTransactionType(split[2]);
         if (mappingType == null)
         {
             returnNotification.Success = false;
@@ -55,7 +59,7 @@ public static class BankActionValidateMapper
 
         //only allow x.00 or x.0 or x        
         var numberPartString = split[3];
-        var decimalTryParse = !Decimal.TryParse(numberPartString, out var outAmountValue);
+        var decimalTryParse = Decimal.TryParse(numberPartString, out var outAmountValue);
         if (!Regex.IsMatch(numberPartString, @"^[0-9]*(\.[0-9]{1,2})?$")
             || !decimalTryParse)
         {

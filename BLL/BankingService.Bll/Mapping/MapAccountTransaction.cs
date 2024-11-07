@@ -33,7 +33,7 @@ public static class MapAccountTransaction
             AccountId = accountTransaction.AccountId,
             Amount = accountTransaction.Amount,
             Date = DateOnly.ParseExact(accountTransaction.Date, "yyyyMMdd"),
-            Type = Enum.Parse<BankActionType>(accountTransaction.Type)
+            Type = Enum.Parse<AccountTransactionType>(accountTransaction.Type)
         };
     }
 }

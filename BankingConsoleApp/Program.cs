@@ -4,6 +4,7 @@ using Bootstrap;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shared;
+using Shared.Mapping;
 
 internal class Program
 {
@@ -76,16 +77,16 @@ internal class Program
             }, false);
         }
 
-        var bankAction = BankActionTypeMapper.MapToBankActionType(line);
+        var bankAction = EnumnMapping.MapToBankActionType(line);
         switch (bankAction)
         {
-            case BankActionType.Transaction:
-            case BankActionType.InterestRules:
-            case BankActionType.PrintStatement:
+            case BankingActionType.Transaction:
+            case BankingActionType.InterestRules:
+            case BankingActionType.PrintStatement:
                 {
                     return (await HandleActionInputValue(bankAction.Value), false);
                 }
-            case BankActionType.Quit:
+            case BankingActionType.Quit:
                 {
                     return (new Notification
                     {
@@ -102,17 +103,17 @@ internal class Program
         }
     }
 
-    private static async Task<Notification> HandleActionInputValue(BankActionType bankActionType)
+    private static async Task<Notification> HandleActionInputValue(BankingActionType bankActionType)
     {
-        if (bankActionType == BankActionType.Transaction)
+        if (bankActionType == BankingActionType.Transaction)
         {
             Console.WriteLine("Please enter transaction details in <Date> <Account> <Type> <Amount> format");
         }
-        else if (bankActionType == BankActionType.InterestRules)
+        else if (bankActionType == BankingActionType.InterestRules)
         {
             Console.WriteLine("Please enter interest rules details in <Date> <RuleId> <Rate in %> format ");
         }
-        else if (bankActionType == BankActionType.PrintStatement)
+        else if (bankActionType == BankingActionType.PrintStatement)
         {
             Console.WriteLine("Please enter account and month to generate the statement <Account> <Year><Month>");
         }
@@ -121,7 +122,7 @@ internal class Program
         var newLineRead = Console.ReadLine();
         if (!string.IsNullOrEmpty(newLineRead))
         {
-            if(bankActionType == BankActionType.Transaction)
+            if(bankActionType == BankingActionType.Transaction)
             {
                 return await _serviceProvider.GetRequiredService<IBankActionService>().PerformTransaction(newLineRead);
             }

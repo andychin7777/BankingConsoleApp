@@ -4,6 +4,7 @@ using BankingService.Bll.Interface;
 using BankingService.Bll.Model;
 using BetterConsoleTables;
 using Shared;
+using Shared.Mapping;
 
 namespace BankingConsoleApp.Service;
 
@@ -36,7 +37,7 @@ public class BankActionService : IBankActionService
                     .Select(x => new
                     {
                         x.Key,
-                        AccountTransaction = x.Select((accountTrans, i) => new
+                        AccountTransaction = x.OrderBy(x => x.AccountTransactionId).Select((accountTrans, i) => new
                         {
                             RowCount = i + 1,
                             accountTrans
@@ -49,14 +50,14 @@ public class BankActionService : IBankActionService
                 {
                     foreach(var accountTransaction in groupItem.AccountTransaction)
                     {
-                        table.AddRow(accountTransaction.accountTrans.Date, 
+                        table.AddRow($"{accountTransaction.accountTrans.Date:yyyyMMdd}", 
                             $"{accountTransaction.accountTrans.Date:yyyyMMdd}-{accountTransaction.RowCount:D0}",
-                            accountTransaction.accountTrans.Type.ToString(),
+                            accountTransaction.accountTrans.Type.MapToString(),
                             $"{accountTransaction.accountTrans.Amount:0.00}"
                         );
                     }
                 }
-                Console.Write(table.ToString());                
+                Console.Write(table.ToString());
             }
             return response;
         }

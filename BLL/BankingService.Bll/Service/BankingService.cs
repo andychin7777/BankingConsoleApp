@@ -31,30 +31,31 @@ public class BankingService : IBankingService
         await _unitOfWork.RunInTransaction(async () =>
         {
             //match exact on account name
-            var existingAccount = (await _unitOfWork.AccountRepository.Find(x => x.AccountName == account.AccountName, withTracking: false)).First();
-            if (existingAccount != null)
+            var databaseAccount = (await _unitOfWork.AccountRepository.Find(x => x.AccountName == account.AccountName, withTracking: false)).FirstOrDefault();
+            if (databaseAccount != null)
             {
                 //update the account transactions to have the respective ID value 
-                account.AccountTransactions.ForEach(x => x.AccountId = existingAccount.AccountId);
+                account.AccountTransactions.ForEach(x => x.AccountId = databaseAccount.AccountId);
                 //append records to existing account
                 await _unitOfWork.AccountTransactionRepository.AddRange(account.AccountTransactions.Select(x => x.MapToSqlAccountTransaction()));
             }
             else
             {
                 //create new account
-                var newAccount = account.MapToSqlAccount();
-                await _unitOfWork.AccountRepository.Add(newAccount);
-
-                //get ID of new account
-                accountId = newAccount.AccountId;
+                databaseAccount = account.MapToSqlAccount();
+                await _unitOfWork.AccountRepository.Add(databaseAccount);
             }
             await _unitOfWork.SaveChanges();
+
+            //get ID of new account
+            accountId = databaseAccount.AccountId;
         });
 
         //get list of transactions
         var newAccountResult = await _unitOfWork.AccountRepository.GetByIdWithAccountTransactions(accountId);
         returnNotification.Value = newAccountResult.MapToBllAccount();
 
+        returnNotification.Success = true;
         return returnNotification;
     }
 }
