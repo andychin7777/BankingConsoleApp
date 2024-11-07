@@ -184,8 +184,13 @@ public class BankingService : IBankingService
         while(currentDayMark <= stopDate)
         {
             //try find the current day balance.
-            var dayBalance = lookup[currentDayMark].ToList().GetTotalSum();
-            totalRunningBalance = totalRunningBalance + dayBalance;
+            var currentDayTransactions = lookup[currentDayMark].OrderBy(x => x.AccountTransactionId).ToList();
+
+            foreach(var transaction in currentDayTransactions)
+            {
+                totalRunningBalance = totalRunningBalance + transaction.GetTotalSum();
+                transaction.Balance = totalRunningBalance;
+            }
 
             if (dictionaryInterestRules.ContainsKey(currentDayMark))
             {

@@ -6,8 +6,13 @@ namespace BankingService.Bll.Helper
     {
         internal static decimal GetTotalSum(this List<AccountTransaction>? accountTransactions)
         {
-            var total = accountTransactions?.Sum(x => x.Type == Shared.AccountTransactionType.Withdrawal ? -x.Amount : x.Amount);
+            var total = accountTransactions?.Sum(x => x.GetTotalSum());
             return total ?? 0;
+        }
+
+        internal static decimal GetTotalSum(this AccountTransaction accountTransaction)
+        {
+            return accountTransaction.Type == Shared.AccountTransactionType.Withdrawal ? -accountTransaction.Amount : accountTransaction.Amount;
         }
     }
 }

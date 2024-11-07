@@ -35,27 +35,18 @@ public class BankActionService : IBankActionService
             if (response.Success)
             {
                 //requires grouping by date value for display purposes.
-                var mappedResults = response.Value.AccountTransactions.OrderBy(x => x.Date)
-                    .GroupBy(x => new { x.Date })
-                    .Select(x => new                    
-                    {
-                        AccountTransactions = x.OrderBy(x => x.AccountTransactionId).Select((accountTrans, i) => new
-                        {
-                            RowCount = i + 1,
-                            accountTrans
-                        })
-                    }).ToList();
+                List<GroupedAccountTransaction> mappedResults = GetGroupedAccountTransactions(response);
 
                 //|Date     | Txn Id      | Type | Amount
-                Table  table = new Table("Date", "Txn Id", "Type", "Amount");
-                foreach(var groupItem in mappedResults)
+                Table table = new Table("Date", "Txn Id", "Type", "Amount");
+                foreach (var groupItem in mappedResults)
                 {
-                    foreach(var accountTransaction in groupItem.AccountTransactions)
+                    foreach (var accountTransaction in groupItem.RowCountGroup)
                     {
-                        table.AddRow($"{accountTransaction.accountTrans.Date:yyyyMMdd}", 
-                            $"{accountTransaction.accountTrans.Date:yyyyMMdd}-{accountTransaction.RowCount:D0}",
-                            accountTransaction.accountTrans.Type.MapToString(),
-                            $"{accountTransaction.accountTrans.Amount:0.00}"
+                        table.AddRow($"{accountTransaction.AccountTransaction.Date:yyyyMMdd}",
+                            $"{accountTransaction.AccountTransaction.Date:yyyyMMdd}-{accountTransaction.RowCount:D0}",
+                            accountTransaction.AccountTransaction.Type.MapToString(),
+                            $"{accountTransaction.AccountTransaction.Amount:0.00}"
                         );
                     }
                 }
@@ -72,6 +63,20 @@ public class BankActionService : IBankActionService
                 Messages = new List<string> { ex.Message }
             };
         }
+    }
+
+    private static List<GroupedAccountTransaction> GetGroupedAccountTransactions(Notification<Account> response)
+    {
+        return response.Value.AccountTransactions.OrderBy(x => x.Date)
+                            .GroupBy(x => new { x.Date })
+                            .Select(x => new GroupedAccountTransaction
+                            {
+                                RowCountGroup = x.OrderBy(x => x.AccountTransactionId).Select((accountTrans, i) => new AccountTransactionRowCountGroup
+                                {
+                                    RowCount = i + 1,
+                                    AccountTransaction = accountTrans
+                                }).ToList()
+                            }).ToList();
     }
 
     public async Task<Notification> PerformDefineInterestRules(string inputString)
@@ -131,23 +136,36 @@ public class BankActionService : IBankActionService
         try
         {
             var response = await _bankingService.ProcessPrintStatement(mapperResponse.Value.Value.name);
+
+            var groupedResponse = GetGroupedAccountTransactions(response);
+            var dateOnlyForAccountPrint = mapperResponse.Value.Value.startOfMonth;
+
             if (response.Success)
             {
                 //Date | Txn Id | Type | Amount | Balance
                 Table table = new Table("Date", "Txn Id", "Type", "Amount", "Balance");
-                var currentBalance = 0m;
-                foreach (var accountTransaction in response.Value.AccountTransactions)
+
+                foreach (var groupItem in groupedResponse)
                 {
-                    table.AddRow($"{accountTransaction.Date}",
-                        accountTransaction.AccountTransactionId == 0 ? "" : accountTransaction.AccountTransactionId,
-
-
-                        );
+                    foreach (var rowCountGroupItem in groupItem.RowCountGroup)
+                    {
+                        if (rowCountGroupItem.AccountTransaction.Date.Year == dateOnlyForAccountPrint.Year && 
+                            rowCountGroupItem.AccountTransaction.Date.Month == dateOnlyForAccountPrint.Month)
+                        {
+                            table.AddRow($"{rowCountGroupItem.AccountTransaction.Date:yyyyMMdd}",
+                            rowCountGroupItem.AccountTransaction.Type == AccountTransactionType.Interest ? "" :
+                                $"{rowCountGroupItem.AccountTransaction.Date:yyyyMMdd}-{rowCountGroupItem.RowCount:D0}",
+                            rowCountGroupItem.AccountTransaction.Type.MapToString(),
+                            $"{rowCountGroupItem.AccountTransaction.Amount:0.00}",
+                            $"{rowCountGroupItem.AccountTransaction.Balance:0.00}");
+                        }
+                    }
                 }
-
+                 
                 Console.WriteLine($"Account: {response.Value.AccountName}");
                 Console.Write(table.ToString());
             }
+            return response;
         }
         catch (Exception ex)
         {
@@ -161,13 +179,13 @@ public class BankActionService : IBankActionService
 
     private class GroupedAccountTransaction
     {
-        public DateOnly Key { get; set; }
+        public List<AccountTransactionRowCountGroup> RowCountGroup { get; set; }
+    }
 
-        public class AccountTransactionRowCountGroup
-        {
-            public int RowCount { get; set; }
-            public AccountTransaction AccountTransaction { get; set; }
-        }
+    private class AccountTransactionRowCountGroup
+    {
+        public int RowCount { get; set; }
+        public AccountTransaction AccountTransaction { get; set; }
     }
 }
 

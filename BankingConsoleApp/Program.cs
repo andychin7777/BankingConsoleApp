@@ -163,7 +163,7 @@ internal class Program
 
         if (bankActionType == BankingActionType.PrintStatement)
         {
-            return await _iBankActionService.
+            return await _iBankActionService.PerformPrintStatement(newLineRead);
         }
         return new Notification
         {

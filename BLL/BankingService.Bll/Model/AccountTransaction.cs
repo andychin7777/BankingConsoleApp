@@ -10,5 +10,10 @@ public class AccountTransaction
     public DateOnly Date { get; set; }
     public AccountTransactionType Type { get; set; }
 
-    public decimal Amount {get;set;}
+    public decimal Amount { get; set; }
+
+    /// <summary>
+    /// Field is not mapped from DAL layer in.
+    /// </summary>
+    public decimal Balance { get; set; }
 }
