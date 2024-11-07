@@ -150,4 +150,43 @@ public static class BankActionValidateMapper
 
         return returnNotification;
     }
+
+    public static Notification<(string name, DateOnly startOfMonth)?> MapStringToTupleNameAndStartOfMonth(string inputString)
+    {
+        if (String.IsNullOrEmpty(inputString))
+        {
+            return new Notification<(string name, DateOnly startOfMonth)?>
+            {
+                Success = false,
+                Messages = new List<string> { $"{DefineInterestRulePrefixMessage} Blank input" }
+            };
+        }
+
+        //<Date> <RuleId> <Rate in %>
+        var split = inputString.Split(" ");
+        if (split.Length != 2)
+        {
+            return new Notification<(string name, DateOnly startOfMonth)?>
+            {
+                Success = false,
+                Messages = new List<string> { $"{DefineInterestRulePrefixMessage} Input string is invalid" }                
+            };
+        }
+
+        var returnNotification = new Notification<(string name, DateOnly startOfMonth)?>()
+        {
+            Success = true
+        };
+        var accountName = split[0];
+
+        //validate date is valid
+        if (!DateOnly.TryParseExact(split[1], "yyyyMM", out var outDateOnly))
+        {
+            returnNotification.Success = false;
+            returnNotification.Messages.Add($"{DefineInterestRulePrefixMessage} Date Input is an invalid Date");
+        }
+
+        returnNotification.Value = new(accountName, outDateOnly);
+        return returnNotification;
+    }
 }

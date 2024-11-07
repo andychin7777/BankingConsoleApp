@@ -1,3 +1,4 @@
+using BankingService.Bll.Helper;
 using System;
 
 namespace BankingService.Bll.Model;
@@ -10,7 +11,6 @@ public class Account
 
     public decimal GetTotalValueOfTransactions()
     {
-        var total = AccountTransactions?.Sum(x => x.Type == Shared.AccountTransactionType.Withdrawal ? -x.Amount : x.Amount);
-        return total ?? 0;
+        return AccountTransactions.GetTotalSum();
     }
 }

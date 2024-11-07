@@ -160,6 +160,11 @@ internal class Program
         {
             return await _iBankActionService.PerformDefineInterestRules(newLineRead);
         }
+
+        if (bankActionType == BankingActionType.PrintStatement)
+        {
+            return await _iBankActionService.
+        }
         return new Notification
         {
             Messages = new List<string> { "Invalid Action" },
