@@ -3,6 +3,7 @@ using BankingService.Dal.Shared.Services;
 using BankingService.Sql.BankingService.Model;
 using BankingService.Sql.DbContext;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace BankingService.Dal.Services
 {
@@ -16,6 +17,12 @@ namespace BankingService.Dal.Services
         {
             return await _dbSet.Include(x => x.AccountTransactions)
                 .FirstAsync(x => x.AccountId == id);
+        }
+        public async Task<IEnumerable<Account?>> FindWithAccountTransactions(Expression<Func<Account, bool>> predicate, bool withTracking = true)
+        {
+            return withTracking
+                ? await _dbSet.Where(predicate).Include(x => x.AccountTransactions).ToListAsync()
+                : await _dbSet.AsNoTracking().Where(predicate).Include(x => x.AccountTransactions).ToListAsync();
         }
     }
 }

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankingConsoleApp", "BankingConsoleApp\BankingConsoleApp.csproj", "{68D07078-3CEB-4D16-9938-495D295DA4B5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BankingConsoleApp", "BankingConsoleApp\BankingConsoleApp.csproj", "{68D07078-3CEB-4D16-9938-495D295DA4B5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BLL", "BLL", "{56FF035A-D3AB-40E0-A833-74591D68E73E}"
 EndProject
@@ -11,19 +11,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DAL", "DAL", "{46DF0839-9F5
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{8A1DB896-169E-4F30-AD63-595113393666}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared\Shared.csproj", "{786E0883-4715-4A12-8F69-4F26A763B21E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Shared\Shared\Shared.csproj", "{786E0883-4715-4A12-8F69-4F26A763B21E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankingService.Dal", "DAL\BankingService.Dal\BankingService.Dal.csproj", "{20A19EEE-29E5-4E38-92F0-B2490B018B52}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BankingService.Dal", "DAL\BankingService.Dal\BankingService.Dal.csproj", "{20A19EEE-29E5-4E38-92F0-B2490B018B52}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankingService.Bll", "BLL\BankingService.Bll\BankingService.Bll.csproj", "{7A0F396C-C7B0-497F-A96B-67A0118DF5C0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BankingService.Bll", "BLL\BankingService.Bll\BankingService.Bll.csproj", "{7A0F396C-C7B0-497F-A96B-67A0118DF5C0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankingService.Sql", "DAL\BankingService.Sql\BankingService.Sql.csproj", "{20443964-7342-4BEE-8CFF-5C30FCA6D776}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{B0939F26-304E-4BBE-970E-D690AF7CE04B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BankingService.Sql", "DAL\BankingService.Sql\BankingService.Sql.csproj", "{20443964-7342-4BEE-8CFF-5C30FCA6D776}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bootstrap", "Bootstrap", "{59517CDE-CF36-42D6-ABA0-0BAB8880A889}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bootstrap", "Bootstrap\Bootstrap\Bootstrap.csproj", "{8A2C894D-EF5D-49D0-AFF8-4E42A30F8EA3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bootstrap", "Bootstrap\Bootstrap\Bootstrap.csproj", "{8A2C894D-EF5D-49D0-AFF8-4E42A30F8EA3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{6425DDBD-04D1-40DC-BB4C-66997BD22259}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankingUnitTests", "BankingUnitTests\BankingUnitTests.csproj", "{6AA5692F-AF7B-4159-8C8D-667AED3EDFBB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +57,10 @@ Global
 		{8A2C894D-EF5D-49D0-AFF8-4E42A30F8EA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A2C894D-EF5D-49D0-AFF8-4E42A30F8EA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A2C894D-EF5D-49D0-AFF8-4E42A30F8EA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6AA5692F-AF7B-4159-8C8D-667AED3EDFBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AA5692F-AF7B-4159-8C8D-667AED3EDFBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6AA5692F-AF7B-4159-8C8D-667AED3EDFBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6AA5692F-AF7B-4159-8C8D-667AED3EDFBB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -65,5 +71,9 @@ Global
 		{7A0F396C-C7B0-497F-A96B-67A0118DF5C0} = {56FF035A-D3AB-40E0-A833-74591D68E73E}
 		{20443964-7342-4BEE-8CFF-5C30FCA6D776} = {46DF0839-9F56-4691-A467-611ECC7FDCAC}
 		{8A2C894D-EF5D-49D0-AFF8-4E42A30F8EA3} = {59517CDE-CF36-42D6-ABA0-0BAB8880A889}
+		{6AA5692F-AF7B-4159-8C8D-667AED3EDFBB} = {6425DDBD-04D1-40DC-BB4C-66997BD22259}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {736E713F-C635-4C0C-876D-5F620879FB56}
 	EndGlobalSection
 EndGlobal

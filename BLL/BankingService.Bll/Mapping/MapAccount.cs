@@ -14,7 +14,7 @@ public static class MapAccount
         {
             AccountId = account.AccountId,
             AccountName = account.AccountName,
-            AccountTransactions = account.AccountTransactions.Select(x => x.MapToSqlAccountTransaction()).ToList()
+            AccountTransactions = account.AccountTransactions?.Select(x => x.MapToSqlAccountTransaction()).ToList()
         };
     }
 
@@ -28,7 +28,7 @@ public static class MapAccount
         {
             AccountId = account.AccountId,
             AccountName = account.AccountName,
-            AccountTransactions = account.AccountTransactions.Select(x => x.MapToBllAccountTransaction()).ToList()
+            AccountTransactions = account.AccountTransactions?.Select(x => x.MapToBllAccountTransaction()).ToList()
         };
     }
 }
