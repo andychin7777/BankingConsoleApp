@@ -15,6 +15,92 @@ namespace BankingUnitTests.BLLTests.BankingServiceTests
         }
 
         [Test]
+        public void ValidateCanRunTransaction_ShouldBeTrue()
+        {
+            //Arrange
+            BankingService.Sql.Model.Account sqlDatabaseAccount = null;
+
+            var account = new Account()
+            {
+                AccountTransactions = new List<AccountTransaction>
+                {
+                    new AccountTransaction()
+                    {
+                        Type = Shared.AccountTransactionType.Deposit,
+                        Amount = 999.9m
+                    }
+                }
+            };
+
+            //Act
+            var result = _moqBankingService.Object.ValidateCanRunTransaction(sqlDatabaseAccount, account);
+
+            //Assert
+            result.Should().BeTrue();
+        }
+
+        [Test]
+        public void ValidateCanRunTransaction_ShouldBeFalse()
+        {
+            //Arrange
+            BankingService.Sql.Model.Account sqlDatabaseAccount = null;
+
+            var account = new Account()
+            {
+                AccountTransactions = new List<AccountTransaction>
+                {
+                    new AccountTransaction()
+                    {
+                        Type = Shared.AccountTransactionType.Withdrawal,
+                        Amount = 999.9m
+                    }
+                }
+            };
+
+            //Act
+            var result = _moqBankingService.Object.ValidateCanRunTransaction(sqlDatabaseAccount, account);
+
+            //Assert
+            result.Should().BeFalse();
+        }
+
+        [Test]
+        public void ValidateCanRunTransaction_Exact0_ShouldBe()
+        {
+            //Arrange
+            BankingService.Sql.Model.Account sqlDatabaseAccount = new BankingService.Sql.Model.Account()
+            {
+                AccountTransactions = new List<BankingService.Sql.Model.AccountTransaction>
+                {
+                    new BankingService.Sql.Model.AccountTransaction()
+                    {
+                        Date = "19900101",
+                        Type = Shared.AccountTransactionType.Deposit.ToString(),
+                        Amount = 999.9m
+                    }                    
+                }
+            };
+
+            var account = new Account()
+            {
+                AccountTransactions = new List<AccountTransaction>
+                {
+                    new AccountTransaction()
+                    {
+                        Type = Shared.AccountTransactionType.Withdrawal,
+                        Amount = 999.9m
+                    }
+                }
+            };
+
+            //Act
+            var result = _moqBankingService.Object.ValidateCanRunTransaction(sqlDatabaseAccount, account);
+
+            //Assert
+            result.Should().BeTrue();
+        }
+
+        [Test]
         public async Task ProcessTransaction_NullEntry_ThrowNullReferenceException()
         {
             //Arrange

@@ -95,7 +95,7 @@ public class BankingService : IBankingService
         else
         {
             total = databaseAccount.MapToBllAccount().GetTotalValueOfTransactions() + currentToActionAccount.GetTotalValueOfTransactions();
-        }        
+        }
 
         return total >= 0;
     }
