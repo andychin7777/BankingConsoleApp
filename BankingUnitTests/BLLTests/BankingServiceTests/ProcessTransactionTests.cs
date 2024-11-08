@@ -1,35 +1,35 @@
 ﻿using BankingService.Bll.Model;
-using BankingService.Dal.Interfaces;
 using FluentAssertions;
 using Moq;
 using System.Linq.Expressions;
-using Shared.Mapping;
+using BankingService.Bll.Mapping;
 
 namespace BankingUnitTests.BLLTests.BankingServiceTests
 {
     [TestFixture]
-    public class ProcessTransactionTests
+    public class ProcessTransactionTests : BaseBankingServiceTest
     {
-        private Mock<IUnitOfWork> _moqUnitOfWork;
-        private Mock<BankingService.Bll.Service.BankingService> _moqBankingService;
         [SetUp]
         public void SetUp()
-        {
-            _moqUnitOfWork = new Mock<IUnitOfWork>();
-            _moqBankingService = new Mock<BankingService.Bll.Service.BankingService>(_moqUnitOfWork.Object)
-            {
-                CallBase = true
-            };
-
-            //setup this function to call internal function.
-            _moqUnitOfWork.Setup(x => x.RunInTransaction(It.IsAny<Func<Task>>())).Callback(async (Func<Task> function) =>
-            {
-                await function();
-            });
+        {            
         }
 
         [Test]
-        public async Task MappingValidation_NoTransactions_ShouldFail()
+        public async Task ProcessTransaction_NullEntry_ThrowNullReferenceException()
+        {
+            //Arrange
+            Account account = null;
+
+            //Act
+            var result = await _moqBankingService.Object.ProcessTransaction(account);
+
+            //Assert
+            result.Success.Should().BeFalse();
+            result.Messages.Select(x => x.ToLowerInvariant()).Should().ContainMatch("*account is null*");
+        }
+
+        [Test]
+        public async Task ProcessTransaction_NoTransactions_ShouldFail()
         {
             //Arrange
             var account = new Account()
@@ -49,7 +49,7 @@ namespace BankingUnitTests.BLLTests.BankingServiceTests
         }
 
         [Test]
-        public async Task MappingValidation_FirstWithdrawal_ShouldFail()
+        public async Task ProcessTransaction_FirstWithdrawal_ShouldFail()
         {
             //Arrange
             var account = new Account()
@@ -87,7 +87,7 @@ namespace BankingUnitTests.BLLTests.BankingServiceTests
         }
 
         [Test]
-        public async Task MappingValidation_WithdrawTooMuch_ShouldFail()
+        public async Task ProcessTransaction_WithdrawTooMuch_ShouldFail()
         {
             //Arrange
             var account = new Account()
@@ -138,6 +138,74 @@ namespace BankingUnitTests.BLLTests.BankingServiceTests
             _moqUnitOfWork.Verify(x => x.AccountRepository.FindWithAccountTransactions(It.IsAny<Expression<Func<BankingService.Sql.Model.Account, bool>>>(),
                 It.IsAny<bool>()), Times.Once);
             _moqUnitOfWork.VerifyNoOtherCalls();
+        }
+
+        [Test]
+        public async Task ProcessTransaction_Deposit_Succeed()
+        {
+            //Arrange
+            var account = new Account()
+            {
+                AccountId = 0,
+                AccountName = "BOB",
+                AccountTransactions = new List<AccountTransaction>()
+                {
+                    new AccountTransaction()
+                    {
+                        Amount = 999.99m,
+                        AccountTransactionId = 0,
+                        AccountId = 0,
+                        Date = new DateOnly(1990, 01, 01),
+                        Type = Shared.AccountTransactionType.Deposit
+                    }
+                }
+            };
+            //setup no return data in database            
+            _moqUnitOfWork.Setup(x => x.AccountRepository.FindWithAccountTransactions(It.IsAny<Expression<Func<BankingService.Sql.Model.Account, bool>>>(),
+                It.IsAny<bool>())).ReturnsAsync(() => new List<BankingService.Sql.Model.Account>
+                {
+                });
+
+            var returnAccount = new BankingService.Sql.Model.Account()
+            {
+                AccountId = 999,
+                AccountTransactions = new List<BankingService.Sql.Model.AccountTransaction>()
+                {
+                    new BankingService.Sql.Model.AccountTransaction()
+                    {
+                        Amount = 999.99m,
+                        AccountTransactionId = 0,
+                        AccountId = 0,
+                        Date = new DateOnly(1990, 01, 01).ToString("yyyyMMdd"),
+                        Type = Shared.AccountTransactionType.Deposit.ToString()
+                    }                    
+                }
+            };
+            _moqUnitOfWork.Setup(x => x.AccountRepository.Add(It.IsAny<BankingService.Sql.Model.Account>())).ReturnsAsync(() => true)
+                    .Callback((BankingService.Sql.Model.Account addAccount) => {
+                        //set the accountId
+                        addAccount.AccountId = returnAccount.AccountId;
+                    });
+
+            //setup only return the returnAccount if the returnAccountId is passed in.
+            _moqUnitOfWork.Setup(x => x.AccountRepository.GetByIdWithAccountTransactions(returnAccount.AccountId)).ReturnsAsync(returnAccount);
+
+            //Act
+            var result = await _moqBankingService.Object.ProcessTransaction(account);
+
+            //Assert
+            result.Success.Should().BeTrue();
+            result.Messages.Should().BeEmpty();
+            _moqUnitOfWork.Verify(x => x.RunInTransaction(It.IsAny<Func<Task>>()), Times.Once);
+            _moqUnitOfWork.Verify(x => x.AccountRepository.FindWithAccountTransactions(It.IsAny<Expression<Func<BankingService.Sql.Model.Account, bool>>>(),
+                It.IsAny<bool>()), Times.Once);
+            _moqUnitOfWork.Verify(x => x.SaveChanges(), Times.Once);
+
+            _moqUnitOfWork.Verify(x => x.AccountRepository.Add(It.IsAny<BankingService.Sql.Model.Account>()), Times.Once);
+            _moqUnitOfWork.Verify(x => x.AccountRepository.GetByIdWithAccountTransactions(returnAccount.AccountId), Times.Once);
+            _moqUnitOfWork.VerifyNoOtherCalls();
+
+            result.Value.Should().BeEquivalentTo(returnAccount.MapToBllAccount());
         }
     }
 }

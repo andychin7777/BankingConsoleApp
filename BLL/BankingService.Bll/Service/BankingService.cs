@@ -17,12 +17,19 @@ public class BankingService : IBankingService
     }
 
     public async Task<Notification<Account>> ProcessTransaction(Account toActionAccount)
-    {
+    {        
         var returnNotification = new Notification<Account>()
         {
             Success = true
         };
         var accountId = 0;
+
+        if (toActionAccount == null)
+        {
+            returnNotification.Success = false;
+            returnNotification.Messages = new List<string>() { "Account is null" };
+            return returnNotification;
+        }
 
         //validate there are transactions to add
         if (!toActionAccount.AccountTransactions.Any())
@@ -77,7 +84,7 @@ public class BankingService : IBankingService
         returnNotification.Value = newAccountResult.MapToBllAccount();
         return returnNotification;
     }
-
+        
     internal bool ValidateCanRunTransaction(Sql.Model.Account databaseAccount, Account currentToActionAccount)
     {
         var total = 0m;
@@ -100,6 +107,13 @@ public class BankingService : IBankingService
             Success = true
         };
 
+        if (interestRule == null)
+        {
+            returnNotification.Success = false;
+            returnNotification.Messages.Add("Interest Rule is null");
+            return returnNotification;
+        }
+
         await _unitOfWork.RunInTransaction(async () =>
         {
             var mappedIntoSqlInterestRule = interestRule.MapToSqlInterestRule();
@@ -116,7 +130,7 @@ public class BankingService : IBankingService
 
             await _unitOfWork.SaveChanges();
             //get all records
-            returnNotification.Value = (await _unitOfWork.InterestRuleRepository.All()).Select(x => x.MapToBllInterestRule())
+            returnNotification.Value = (await _unitOfWork.InterestRuleRepository.All(false)).Select(x => x.MapToBllInterestRule())
                 .ToList();
         });
 
@@ -137,7 +151,7 @@ public class BankingService : IBankingService
                 }
             };
         }
-        var interestRates = await _unitOfWork.InterestRuleRepository.All();
+        var interestRates = await _unitOfWork.InterestRuleRepository.All(false);
         var account = result.MapToBllAccount();
 
         AddInterest(account, interestRates.Select(x => x.MapToBllInterestRule()).ToList(), printForMonth);
@@ -156,7 +170,7 @@ public class BankingService : IBankingService
     /// due to time contraints this code is done as such below
     /// </summary>
     /// <param name="account"></param>
-    internal void AddInterest(Account account, List<InterestRule> interestRules, DateOnly printForMonth)
+    internal virtual void AddInterest(Account account, List<InterestRule> interestRules, DateOnly printForMonth)
     {
         //start date
         var startDate = account.AccountTransactions.OrderBy(x => x.Date).FirstOrDefault();
