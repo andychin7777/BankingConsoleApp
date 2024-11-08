@@ -1,6 +1,7 @@
 using System.Data;
 using System.Text.RegularExpressions;
 using BankingService.Bll.Model;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Shared;
 using Shared.Mapping;
 
@@ -11,6 +12,11 @@ public static class BankActionValidateMapper
     private const string TransactionValidationPrefixMessage = "Transaction Validation Message :";
     private const string DefineInterestRulePrefixMessage = "Interest Rule Validation Message :";
 
+    /// <summary>
+    /// <Date> <Account> <Type> <Amount>
+    /// </summary>
+    /// <param name="inputString"></param>
+    /// <returns></returns>
     public static Notification<Account?> MapStringToAccountAndTransaction(string inputString)
     {
         if (String.IsNullOrEmpty(inputString))
@@ -84,6 +90,11 @@ public static class BankActionValidateMapper
         return returnNotification;
     }
 
+    /// <summary>
+    /// <Date> <RuleId> <Rate in %>
+    /// </summary>
+    /// <param name="inputString"></param>
+    /// <returns></returns>
     public static Notification<InterestRule?> MapStringToInterestRuleAndTransaction(string inputString)
     {
         if (String.IsNullOrEmpty(inputString))
@@ -151,6 +162,11 @@ public static class BankActionValidateMapper
         return returnNotification;
     }
 
+    /// <summary>
+    /// <name> <year><month>
+    /// </summary>
+    /// <param name="inputString"></param>
+    /// <returns></returns>
     public static Notification<(string name, DateOnly startOfMonth)?> MapStringToTupleNameAndStartOfMonth(string inputString)
     {
         if (String.IsNullOrEmpty(inputString))
@@ -162,7 +178,7 @@ public static class BankActionValidateMapper
             };
         }
 
-        //<Date> <RuleId> <Rate in %>
+        //<name> <year><month>
         var split = inputString.Split(" ");
         if (split.Length != 2)
         {
