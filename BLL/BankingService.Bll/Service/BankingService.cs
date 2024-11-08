@@ -4,6 +4,7 @@ using BankingService.Bll.Mapping;
 using BankingService.Bll.Model;
 using BankingService.Dal.Interfaces;
 using Shared;
+using System.Collections;
 
 namespace BankingService.Bll.Service;
 
@@ -123,7 +124,7 @@ public class BankingService : IBankingService
         return returnNotification;
     }
 
-    public async Task<Notification<Account>> ProcessPrintStatement(string accountName)
+    public async Task<Notification<Account>> ProcessPrintStatement(string accountName, DateOnly printForMonth)
     {
         var result = (await _unitOfWork.AccountRepository.FindWithAccountTransactions(x => x.AccountName == accountName)).FirstOrDefault();
         if (result == null)
@@ -140,12 +141,12 @@ public class BankingService : IBankingService
         var interestRates = await _unitOfWork.InterestRuleRepository.All();
         var account = result.MapToBllAccount();
 
-        AddInterest(account, interestRates.Select(x => x.MapToBllInterestRule()).ToList());
+        AddInterest(account, interestRates.Select(x => x.MapToBllInterestRule()).ToList(), printForMonth);
         
         return new Notification<Account?>()
         {
             Success = true,
-            Value = result.MapToBllAccount()
+            Value = account
         };
     }
 
@@ -156,7 +157,7 @@ public class BankingService : IBankingService
     /// due to time contraints this code is done as such below
     /// </summary>
     /// <param name="account"></param>
-    internal void AddInterest(Account account, List<InterestRule> interestRules)
+    internal void AddInterest(Account account, List<InterestRule> interestRules, DateOnly printForMonth)
     {
         //start date
         var startDate = account.AccountTransactions.OrderBy(x => x.Date).FirstOrDefault();
@@ -166,9 +167,7 @@ public class BankingService : IBankingService
             return;
         }
 
-        var lastDate = account.AccountTransactions.OrderBy(x => x.Date).LastOrDefault();
-        var _1MonthLater = lastDate.Date.AddMonths(1);
-
+        var _1MonthLater = printForMonth.AddMonths(1);
         var stopDate = new DateOnly(_1MonthLater.Year, _1MonthLater.Month, 01);
         
         InterestRule currentInterestRule = null;
@@ -178,7 +177,8 @@ public class BankingService : IBankingService
         var interestCounter = 0m;
         var totalRunningBalance = 0m;
 
-        var dictionaryInterestRules = interestRules.ToDictionary(x => x.InterestRuleDateActive);
+        var queue = new Queue<InterestRule>(interestRules.OrderBy(x => x.InterestRuleDateActive).ToList());
+
         var lookup = account.AccountTransactions.ToLookup(x => x.Date, x => x);
         //run through day by day
         while(currentDayMark <= stopDate)
@@ -192,9 +192,10 @@ public class BankingService : IBankingService
                 transaction.Balance = totalRunningBalance;
             }
 
-            if (dictionaryInterestRules.ContainsKey(currentDayMark))
+            //find the active range interest rate
+            while(queue.Any() && queue.Peek().InterestRuleDateActive < currentDayMark)
             {
-                currentInterestRule = dictionaryInterestRules[currentDayMark];
+                currentInterestRule = queue.Dequeue();
             }
             
             //apply the interest rule if it exists
@@ -202,21 +203,23 @@ public class BankingService : IBankingService
             {
                 //apply interest rule
                 //treat year as 365 days 
-                interestCounter = interestCounter + totalRunningBalance * currentInterestRule.InterestRate / 365;
+                interestCounter = interestCounter + (totalRunningBalance * currentInterestRule.InterestRate / 100 / 365);
             }
 
             //if day is end of the month, we need to apply interest and then apply it to the totalRunningBalance.
-            if (currentDayMark.Month != currentDayMark.AddDays(1).Month)
+            if (interestCounter != 0 && currentDayMark.Month != currentDayMark.AddDays(1).Month)
             {
-                var resultingRoundedInterest = Math.Round(interestCounter, 2, MidpointRounding.ToNegativeInfinity);
+                var resultingRoundedInterest = Math.Round(interestCounter, 2, MidpointRounding.ToPositiveInfinity);
+                //add to balance
+                totalRunningBalance = totalRunningBalance + resultingRoundedInterest;
+
                 account.AccountTransactions.Add(new AccountTransaction()
                 {
                     Amount = resultingRoundedInterest,
                     Date = currentDayMark,
                     Type = AccountTransactionType.Interest,
+                    Balance = totalRunningBalance
                 });
-                //add to balance
-                totalRunningBalance = totalRunningBalance + resultingRoundedInterest;
 
                 //clear all interst
                 interestCounter = 0m;

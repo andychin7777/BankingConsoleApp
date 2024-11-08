@@ -135,7 +135,7 @@ public class BankActionService : IBankActionService
 
         try
         {
-            var response = await _bankingService.ProcessPrintStatement(mapperResponse.Value.Value.name);
+            var response = await _bankingService.ProcessPrintStatement(mapperResponse.Value.Value.name, mapperResponse.Value.Value.startOfMonth);
 
             var groupedResponse = GetGroupedAccountTransactions(response);
             var dateOnlyForAccountPrint = mapperResponse.Value.Value.startOfMonth;

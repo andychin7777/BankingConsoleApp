@@ -7,5 +7,5 @@ public interface IBankingService
 {
     public Task<Notification<Account>> ProcessTransaction(Account account);
     public Task<Notification<List<InterestRule>>> ProcessDefineInterestRule(InterestRule interestRule);
-    public Task<Notification<Account>> ProcessPrintStatement(string name);
+    public Task<Notification<Account>> ProcessPrintStatement(string name, DateOnly endOfMonth);
 }
