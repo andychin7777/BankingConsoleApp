@@ -58,7 +58,7 @@ public static class BankActionValidateMapper
         returnNotification.Value.AccountName = split[1];
 
         //try get the bank action type
-        var mappingType = EnumnMapping.MapToAccountTransactionType(split[2]);
+        var mappingType = EnumMapping.MapToAccountTransactionType(split[2]);
         if (mappingType == null)
         {
             returnNotification.Success = false;

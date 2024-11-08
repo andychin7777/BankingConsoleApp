@@ -83,7 +83,7 @@ internal class Program
             }, false);
         }
 
-        var bankAction = EnumnMapping.MapToBankActionType(line);
+        var bankAction = EnumMapping.MapToBankActionType(line);
         switch (bankAction)
         {
             case BankingActionType.Transaction:

@@ -1,6 +1,6 @@
 ﻿namespace Shared.Mapping;
 
-public static class EnumnMapping
+public static class EnumMapping
 {
     public static BankingActionType? MapToBankActionType(this string mappingString)
     {
