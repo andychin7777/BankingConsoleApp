@@ -1,16 +1,14 @@
-﻿using BankingService.Bll.Model;
-
-namespace BankingService.Bll.Mapping
+﻿namespace BankingService.Bll.Mapping
 {
     public static class MapInterestRule
     {
-        public static Sql.BankingService.Model.InterestRule? MapToSqlInterestRule(this InterestRule interestRule)
+        public static Sql.Model.InterestRule? MapToSqlInterestRule(this Model.InterestRule interestRule)
         {
             if (interestRule == null)
             {
                 return null;
             }
-            return new Sql.BankingService.Model.InterestRule()
+            return new Sql.Model.InterestRule()
             {
                 InterestRuleId = interestRule.InterestRuleId,
                 InterestRate = interestRule.InterestRate,
@@ -19,13 +17,13 @@ namespace BankingService.Bll.Mapping
             };
         }
 
-        public static InterestRule? MapToBllInterestRule(this Sql.BankingService.Model.InterestRule interestRule)
+        public static Model.InterestRule? MapToBllInterestRule(this Sql.Model.InterestRule interestRule)
         {
             if (interestRule == null)
             {
                 return null;
             }
-            return new InterestRule()
+            return new Model.InterestRule()
             {
                 InterestRuleId = interestRule.InterestRuleId,
                 InterestRate = interestRule.InterestRate,

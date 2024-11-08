@@ -1,8 +1,8 @@
 using System;
 using BankingService.Dal.Interfaces;
 using BankingService.Dal.Shared.Services;
-using BankingService.Sql.BankingService.Model;
 using BankingService.Sql.DbContext;
+using BankingService.Sql.Model;
 
 namespace BankingService.Dal.Services;
 

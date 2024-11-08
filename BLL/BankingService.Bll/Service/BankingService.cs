@@ -78,7 +78,7 @@ public class BankingService : IBankingService
         return returnNotification;
     }
 
-    private bool ValidateCanRunTransaction(Sql.BankingService.Model.Account databaseAccount, Account currentToActionAccount)
+    internal bool ValidateCanRunTransaction(Sql.Model.Account databaseAccount, Account currentToActionAccount)
     {
         var total = 0m;
         if (databaseAccount == null)

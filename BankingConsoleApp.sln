@@ -25,7 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bootstrap", "Bootstrap\Boot
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{6425DDBD-04D1-40DC-BB4C-66997BD22259}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankingUnitTests", "BankingUnitTests\BankingUnitTests.csproj", "{6AA5692F-AF7B-4159-8C8D-667AED3EDFBB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BankingUnitTests", "BankingUnitTests\BankingUnitTests.csproj", "{6AA5692F-AF7B-4159-8C8D-667AED3EDFBB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

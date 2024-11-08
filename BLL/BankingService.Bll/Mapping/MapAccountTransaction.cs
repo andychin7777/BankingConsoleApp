@@ -1,17 +1,16 @@
-using BankingService.Bll.Model;
 using Shared;
 
 namespace BankingService.Bll.Mapping;
 
 public static class MapAccountTransaction
 {
-    public static Sql.BankingService.Model.AccountTransaction? MapToSqlAccountTransaction(this AccountTransaction accountTransaction)
+    public static Sql.Model.AccountTransaction? MapToSqlAccountTransaction(this Model.AccountTransaction accountTransaction)
     {
         if (accountTransaction == null)
         {
             return null;
         }
-        return new Sql.BankingService.Model.AccountTransaction()
+        return new Sql.Model.AccountTransaction()
         {
             AccountTransactionId = accountTransaction.AccountTransactionId,
             AccountId = accountTransaction.AccountId,
@@ -21,13 +20,13 @@ public static class MapAccountTransaction
         };
     }
 
-    public static AccountTransaction? MapToBllAccountTransaction(this Sql.BankingService.Model.AccountTransaction accountTransaction)
+    public static Model.AccountTransaction? MapToBllAccountTransaction(this Sql.Model.AccountTransaction accountTransaction)
     {
         if (accountTransaction == null)
         {
             return null;
         }
-        return new AccountTransaction()
+        return new Model.AccountTransaction()
         {
             AccountTransactionId = accountTransaction.AccountTransactionId,
             AccountId = accountTransaction.AccountId,

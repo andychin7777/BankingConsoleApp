@@ -1,4 +1,4 @@
-﻿using BankingService.Sql.BankingService.Model;
+﻿using BankingService.Sql.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace BankingService.Sql.DbContext

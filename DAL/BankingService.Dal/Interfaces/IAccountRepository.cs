@@ -1,5 +1,5 @@
 ﻿using BankingService.Dal.Shared.Interfaces;
-using BankingService.Sql.BankingService.Model;
+using BankingService.Sql.Model;
 using System.Linq.Expressions;
 
 namespace BankingService.Dal.Interfaces

@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BankingService.Sql.BankingService.Model;
+namespace BankingService.Sql.Model;
 
 [Table("AccountTransaction")]
 public class AccountTransaction
